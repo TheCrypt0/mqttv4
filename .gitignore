@@ -1,3 +1,13 @@
+*.o
+/mqttv4
+
+*.config
+*.creator*
+*.files
+*.includes
+
+lib/*
+
 # Object files
 *.o
 *.ko
