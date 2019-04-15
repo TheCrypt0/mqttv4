@@ -6,13 +6,13 @@
 -include ../config.mak
 
 TARGET = mqttv4
-LIBS =
+
+LIBS = -L../lib \
+            -lmosquitto
 
 CFLAGS = -Os \
 			-Wall \
-            -I../include \
-            -L../lib \
-            -lmosquitto
+            -I../include 
 
 .PHONY: default all clean
 
