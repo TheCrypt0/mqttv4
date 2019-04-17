@@ -197,5 +197,5 @@ static void publish_callback(struct mosquitto *mosq, void *obj, int mid)
 
 static void log_callback(struct mosquitto *mosq, void *obj, int level, const char *str)
 {
-    printf("%s\n", str);
+    //printf("%s\n", str);
 }

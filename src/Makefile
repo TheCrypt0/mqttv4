@@ -8,7 +8,9 @@
 TARGET = mqttv4
 
 LIBS = -L../lib \
-            -lmosquitto
+            -lmosquitto \
+            -lrt \
+            -lpthread
 
 CFLAGS = -Os \
 			-Wall \

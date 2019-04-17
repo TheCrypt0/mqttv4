@@ -9,6 +9,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "ipc.h"
 #include "mqtt.h"
 
 #define MQTTV4_VERSION      "0.0.1"
