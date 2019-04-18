@@ -28,7 +28,7 @@ int tr_queue_routine;
 static int open_queue();
 static int start_queue_thread();
 static void *queue_thread(void *args);
-static int parse_message(char *message, ssize_t len);
+static int parse_message(char *msg, ssize_t len);
 
 static void call_callback(IPC_MESSAGE_TYPE type);
 static void ipc_debug(const char* fmt, ...);
@@ -150,23 +150,23 @@ static void *queue_thread(void *args)
 // IPC PARSER
 //-----------------------------------------------------------------------------
 
-static int parse_message(char *message, ssize_t len)
+static int parse_message(char *msg, ssize_t len)
 {
     int i;
     ipc_debug("Parsing message.\n");
 
     for(i=0; i<len; i++)
-        ipc_debug("%02x ", message[i]);
+        ipc_debug("%02x ", msg[i]);
     ipc_debug("\n");
 
     if(len>=12)
     {
-        if(memcmp(message, IPC_FIRST_HEADER_0, 4)==0)
+        if(memcmp(msg, IPC_FIRST_HEADER_0, 4)==0)
         {
-            message+=4;
-            if(memcmp(message,IPC_SECOND_HEADER_0, 4)==0)
+            msg+=4;
+            if(memcmp(msg,IPC_SECOND_HEADER_0, 4)==0)
             {
-                message+=4;
+                msg+=4;
 
                 // It seems like the motion events may contain even
                 // more information. Like the motion "strength", treshold
@@ -177,12 +177,12 @@ static int parse_message(char *message, ssize_t len)
                 // HINT: See the /tmp/log.txt file for more info regarding
                 // the current motion. (tail -f /tmp/log.txt)
 
-                if(memcmp(message, IPC_MOTION_START, 4)==0)
+                if(memcmp(msg, IPC_MOTION_START, 4)==0)
                 {
                     handle_ipc_motion_start();
                     return 0;
                 }
-                else if(memcmp(message, IPC_MOTION_STOP, 4)==0)
+                else if(memcmp(msg, IPC_MOTION_STOP, 4)==0)
                 {
                     handle_ipc_motion_stop();
                     return 0;

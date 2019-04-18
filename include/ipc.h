@@ -1,5 +1,5 @@
 /*
- * This file is part of ipclib (https://github.com/TheCrypt0/ipclib).
+ * This file is part of libipc (https://github.com/TheCrypt0/libipc).
  * Copyright (c) 2019 Davide Maggioni.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -59,7 +59,6 @@ void ipc_stop();
 //-----------------------------------------------------------------------------
 
 int ipc_set_callback(IPC_MESSAGE_TYPE type, void (*f)());
-
 
 
 #endif // IPC_H
