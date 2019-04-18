@@ -6,7 +6,7 @@ static mqtt_conf_t *mqtt_conf;
 static int is_connected;
 static int mid_sent;
 
-int init_mosquitto_instance();
+static int init_mosquitto_instance();
 
 static void connect_callback(struct mosquitto *mosq, void *obj, int result);
 static void disconnect_callback(struct mosquitto *mosq, void *obj, int rc);
@@ -51,6 +51,9 @@ void mqtt_loop(void)
 
 void mqtt_init_conf(mqtt_conf_t *conf)
 {
+    conf->user=NULL;
+    conf->password=NULL;
+
     strcpy(conf->host, "127.0.0.1");
     strcpy(conf->bind_address, "0.0.0.0");
 
@@ -71,6 +74,10 @@ int mqtt_connect()
     int retries=0;
 
     printf("Trying to connect... ");
+
+    if(mqtt_conf->user==NULL || strcmp(mqtt_conf->user, "")==0)
+        mosquitto_username_pw_set(mosq, mqtt_conf->user, mqtt_conf->password);
+
     ret=mosquitto_connect_bind(mosq, mqtt_conf->host, mqtt_conf->port,
                                mqtt_conf->keepalive, mqtt_conf->bind_address);
 
@@ -137,7 +144,7 @@ int mqtt_send_message(mqtt_msg_t *msg)
 
 //-----------------------------------------------------------------------------
 
-int init_mosquitto_instance()
+static int init_mosquitto_instance()
 {
     mosq = mosquitto_new("mqttv4", true, NULL);
 
@@ -197,5 +204,5 @@ static void publish_callback(struct mosquitto *mosq, void *obj, int mid)
 
 static void log_callback(struct mosquitto *mosq, void *obj, int level, const char *str)
 {
-    //printf("%s\n", str);
+    printf("%s\n", str);
 }

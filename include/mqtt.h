@@ -11,7 +11,9 @@
 
 typedef struct
 {
-    char        host[32];
+    char       *user;
+    char       *password;
+    char        host[128];
     int         port;
     int         keepalive;
     char        bind_address[32];
