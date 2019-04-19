@@ -56,6 +56,8 @@ int main(int argc, char **argv)
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
 
+    printf("Starting mqttv4 v%s\n", MQTTV4_VERSION);
+
     ret=init_mqtt();
     if(ret!=0)
         exit(EXIT_FAILURE);

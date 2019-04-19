@@ -75,11 +75,19 @@ int mqtt_connect()
 
     printf("Trying to connect... ");
 
-    if(mqtt_conf->user==NULL || strcmp(mqtt_conf->user, "")==0)
-        mosquitto_username_pw_set(mosq, mqtt_conf->user, mqtt_conf->password);
+    if(mqtt_conf->user!=NULL && strcmp(mqtt_conf->user, "")!=0)
+    {
+        ret=mosquitto_username_pw_set(mosq, mqtt_conf->user, mqtt_conf->password);
 
-    ret=mosquitto_connect_bind(mosq, mqtt_conf->host, mqtt_conf->port,
-                               mqtt_conf->keepalive, mqtt_conf->bind_address);
+        if(ret!=MOSQ_ERR_SUCCESS)
+        {
+            fprintf(stderr, "Unable to set the auth parameters (%s).\n", mosquitto_strerror(ret));
+            return -1;
+        }
+    }
+
+    ret=mosquitto_connect(mosq, mqtt_conf->host, mqtt_conf->port,
+                               mqtt_conf->keepalive);
 
     if(ret!=MOSQ_ERR_SUCCESS)
     {

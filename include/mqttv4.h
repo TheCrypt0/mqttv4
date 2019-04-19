@@ -13,7 +13,7 @@
 #include "ipc.h"
 #include "mqtt.h"
 
-#define MQTTV4_VERSION      "0.0.1"
+#define MQTTV4_VERSION      "0.0.2"
 #define MQTTV4_CONF_FILE    "/home/yi-hack-v4/etc/mqttv4.conf"
 
 typedef struct
