@@ -5,8 +5,10 @@
  * This code is ugly and it is the result of some testing
  * and madness with the MQTT.
  *
- * It will be probably re-written from the ground up to
+ * It will be probably re-written from the ground-up to
  * handle more configurations, messages and callbacks.
+ *
+ * Warning: No clean exit.
  *
  * Crypto
  */
