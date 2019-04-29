@@ -58,15 +58,13 @@ int main(int argc, char **argv)
 
     printf("Starting mqttv4 v%s\n", MQTTV4_VERSION);
 
+    mqtt_init_conf(&conf);
+    init_mqttv4_config();
+    mqtt_set_conf(&conf);
+
     ret=init_mqtt();
     if(ret!=0)
         exit(EXIT_FAILURE);
-
-    mqtt_init_conf(&conf);
-
-    init_mqttv4_config();
-
-    mqtt_set_conf(&conf);
 
     ret=mqtt_connect();
     if(ret!=0)
@@ -101,6 +99,10 @@ static void handle_config(const char *key, const char *value)
     if(strcmp(key, "MQTT_IP")==0)
     {
         strcpy(conf.host, value);
+    }
+    else if(strcmp(key, "MQTT_CLIENT_ID")==0)
+    {
+        strcpy(conf.client_id, value);
     }
     else if(strcmp(key, "MQTT_USER")==0)
     {

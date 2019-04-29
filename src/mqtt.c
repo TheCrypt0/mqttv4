@@ -51,6 +51,8 @@ void mqtt_loop(void)
 
 void mqtt_init_conf(mqtt_conf_t *conf)
 {
+    strcpy(conf->client_id, "yi-cam");
+
     conf->user=NULL;
     conf->password=NULL;
 
@@ -154,7 +156,7 @@ int mqtt_send_message(mqtt_msg_t *msg)
 
 static int init_mosquitto_instance()
 {
-    mosq = mosquitto_new("mqttv4", true, NULL);
+    mosq = mosquitto_new(mqtt_conf->client_id, true, NULL);
 
     if(!mosq){
         switch(errno){
