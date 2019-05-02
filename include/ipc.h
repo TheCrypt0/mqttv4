@@ -27,6 +27,8 @@
 #include <pthread.h>
 #include <mqueue.h>
 
+#define IPC_LIBRARY_VERSION     "0.1.0"
+
 #define IPC_DEBUG               0
 
 #define IPC_QUEUE_NAME          "/ipc_dispatch"
