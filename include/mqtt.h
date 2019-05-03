@@ -7,7 +7,7 @@
 #include <errno.h>
 #include <mosquitto.h>
 
-#define MAX_RETRY   20
+#define MAX_RETRY   100
 
 typedef struct
 {

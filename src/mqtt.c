@@ -88,14 +88,22 @@ int mqtt_connect()
         }
     }
 
-    ret=mosquitto_connect(mosq, mqtt_conf->host, mqtt_conf->port,
-                               mqtt_conf->keepalive);
+    retries=0;
 
-    if(ret!=MOSQ_ERR_SUCCESS)
+    do
     {
-        fprintf(stderr, "Unable to connect (%s).\n", mosquitto_strerror(ret));
-        return -1;
-    }
+        ret=mosquitto_connect(mosq, mqtt_conf->host, mqtt_conf->port,
+                                   mqtt_conf->keepalive);
+
+        if(ret!=MOSQ_ERR_SUCCESS)
+            fprintf(stderr, "Unable to connect (%s).\n", mosquitto_strerror(ret));
+
+        retries++;
+        usleep(500*1000);
+
+    } while(ret!=MOSQ_ERR_SUCCESS && retries<=(MAX_RETRY*10));
+
+    retries=0;
 
     do
     {
