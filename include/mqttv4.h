@@ -12,6 +12,7 @@
 #include "config.h"
 #include "ipc.h"
 #include "mqtt.h"
+#include "files.h"
 
 #define MQTTV4_VERSION      "0.0.3"
 #define MQTTV4_CONF_FILE    "/home/yi-hack-v4/etc/mqttv4.conf"
@@ -20,6 +21,7 @@ typedef struct
 {
     char *mqtt_prefix;
     char *topic_motion;
+    char *topic_motion_files;
     char *motion_start_msg;
     char *motion_stop_msg;
 } mqttv4_conf_t;

@@ -19,12 +19,59 @@ mqttv4_conf_t mqttv4_conf;
 static void init_mqttv4_config();
 static void handle_config(const char *key, const char *value);
 
+files_thread filesThread[2];
+
+time_t timeStart, timeStop;
+//pthread_t thread;
+int files_delay = 70;
+int events_num = 100;
+
+int get_thread_index()
+{
+    int i;
+
+    for (i = 0; i < 2; i++) {
+        if (filesThread[i].active == 0)
+            return i;
+    }
+
+    return -1;
+}
+
+void *send_files(void *arg)
+{
+    char topic[128];
+    mqtt_msg_t msg;
+    files_thread *ft = (files_thread *) arg;
+
+    sleep(files_delay);
+
+    printf("SENDING FILES LIST\n");
+
+    memset(ft->output, '\0', sizeof(ft->output));
+    if (getMp4Files(ft->output, events_num, ft->timeStart, ft->timeStop) == 0) {
+        msg.msg=ft->output;
+        msg.len=strlen(msg.msg);
+        msg.topic=topic;
+
+        sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion_files);
+
+        mqtt_send_message(&msg);
+    }
+    ft->active = 0;
+
+    pthread_exit(NULL);
+}
+
 void callback_motion_start()
 {
     char topic[128];
     mqtt_msg_t msg;
 
     printf("CALLBACK MOTION START\n");
+
+    if (timeStart == 0)
+        time(&timeStart);
 
     msg.msg=mqttv4_conf.motion_start_msg;
     msg.len=strlen(msg.msg);
@@ -39,8 +86,11 @@ void callback_motion_stop()
 {
     char topic[128];
     mqtt_msg_t msg;
+    int ti;
 
     printf("CALLBACK MOTION STOP\n");
+
+    time(&timeStop);
 
     msg.msg=mqttv4_conf.motion_stop_msg;
     msg.len=strlen(msg.msg);
@@ -49,6 +99,20 @@ void callback_motion_stop()
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion);
 
     mqtt_send_message(&msg);
+
+    ti = get_thread_index();
+    if (ti >=0 ) {
+        filesThread[ti].timeStart = timeStart;
+        filesThread[ti].timeStop = timeStop;
+        filesThread[ti].active = 1;
+
+        if (pthread_create(&filesThread[ti].thread, NULL, send_files, (void *) &filesThread[ti])) {
+            printf("An error occured creating thread\n");
+        }
+    }
+
+    timeStart = 0;
+    timeStop = 0;
 }
 
 int main(int argc, char **argv)
@@ -59,6 +123,9 @@ int main(int argc, char **argv)
     setbuf(stderr, NULL);
 
     printf("Starting mqttv4 v%s\n", MQTTV4_VERSION);
+
+    filesThread[0].active = 0;
+    filesThread[1].active = 0;
 
     mqtt_init_conf(&conf);
     init_mqttv4_config();
@@ -154,6 +221,11 @@ static void handle_config(const char *key, const char *value)
     {
         mqttv4_conf.topic_motion=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.topic_motion, value);
+    }
+    else if(strcmp(key, "TOPIC_MOTION_FILES")==0)
+    {
+        mqttv4_conf.topic_motion_files=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.topic_motion_files, value);
     }
     else if(strcmp(key, "MOTION_START_MSG")==0)
     {
