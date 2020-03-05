@@ -1,11 +1,3 @@
-#include <unistd.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "files.h"
 
 int findFile(char *dirname, char *dir, char *filestart)
@@ -27,8 +19,6 @@ int findFile(char *dirname, char *dir, char *filestart)
             if(strcmp(".", entry->d_name) == 0 ||
                 strcmp("..", entry->d_name) == 0)
                 continue;
-            /* Recurse */
-//            findfile(dirname, entry->d_name, filestart);
         } else {
             if (strncmp(entry->d_name, filestart, strlen(filestart)) == 0) {
                 strcpy(dirname, entry->d_name);
@@ -48,7 +38,7 @@ int findFile(char *dirname, char *dir, char *filestart)
 int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
 {
     time_t rawtime;
-    struct tm *timeinfo, *startTi, *endTi;
+    struct tm *timeinfo;
     char sDir[15];
     char sFile[13];
     char sFilename[1024];
@@ -59,15 +49,15 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
 
     sprintf(output, "{\n\"start\":");
 
-    startTi=localtime(&startTime);
-    if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", startTi) == 0) {
+    timeinfo=localtime(&startTime);
+    if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
         printf("strftime returned 0");
         return -1;
     }
     sprintf(output, "%s\"%s\",\n\"end\":", output, s8601date);
 
-    endTi=localtime(&endTime);
-    if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", endTi) == 0) {
+    timeinfo=localtime(&endTime);
+    if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
         printf("strftime returned 0");
         return -1;
     }
@@ -78,7 +68,6 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
         timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour);
     sprintf(sFile, "%02dM", timeinfo->tm_min);
 
-//    printf("%s - %s\n", sDir, sFile);
     while (findFile(sFilename, sDir, sFile) == 0) {
         sprintf(output, "%s\"%s/%s\", ", output, sDir, sFilename);
 

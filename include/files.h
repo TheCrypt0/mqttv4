@@ -1,11 +1,13 @@
 #ifndef FILES_H
 #define FILES_H
 
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 #define RECORD_PATH "/tmp/sd/record"
 
@@ -13,7 +15,7 @@ typedef struct {
     pthread_t thread;
     time_t timeStart;
     time_t timeStop;
-    char output[4096];
+    char output[2048];   // Enough for 50 files
     int active;
 } files_thread;
 

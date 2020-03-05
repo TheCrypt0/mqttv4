@@ -22,9 +22,8 @@ static void handle_config(const char *key, const char *value);
 files_thread filesThread[2];
 
 time_t timeStart, timeStop;
-//pthread_t thread;
-int files_delay = 70;
-int events_num = 100;
+int files_delay = 70;        // Wait for xx seconds before search for mp4 files
+int files_max_events = 50;   // Number of files reported in the message
 
 int get_thread_index()
 {
@@ -38,7 +37,7 @@ int get_thread_index()
     return -1;
 }
 
-void *send_files(void *arg)
+void *send_files_list(void *arg)
 {
     char topic[128];
     mqtt_msg_t msg;
@@ -49,7 +48,7 @@ void *send_files(void *arg)
     printf("SENDING FILES LIST\n");
 
     memset(ft->output, '\0', sizeof(ft->output));
-    if (getMp4Files(ft->output, events_num, ft->timeStart, ft->timeStop) == 0) {
+    if (getMp4Files(ft->output, files_max_events, ft->timeStart, ft->timeStop) == 0) {
         msg.msg=ft->output;
         msg.len=strlen(msg.msg);
         msg.topic=topic;
@@ -106,9 +105,10 @@ void callback_motion_stop()
         filesThread[ti].timeStop = timeStop;
         filesThread[ti].active = 1;
 
-        if (pthread_create(&filesThread[ti].thread, NULL, send_files, (void *) &filesThread[ti])) {
+        if (pthread_create(&filesThread[ti].thread, NULL, send_files_list, (void *) &filesThread[ti])) {
             printf("An error occured creating thread\n");
         }
+        pthread_detach(filesThread[ti].thread);
     }
 
     timeStart = 0;
