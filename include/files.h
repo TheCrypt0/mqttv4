@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #define RECORD_PATH "/tmp/sd/record"
 

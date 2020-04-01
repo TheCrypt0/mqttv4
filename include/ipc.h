@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <string.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <pthread.h>
 #include <mqueue.h>
