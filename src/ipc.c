@@ -203,7 +203,7 @@ static int parse_message(char *msg, ssize_t len)
 static void handle_ipc_unrecognized()
 {
     ipc_debug("GOT UNRECOGNIZED MESSAGE\n");
-    call_callback(IPC_MSG_UNRECOGNIZED);
+//    call_callback(IPC_MSG_UNRECOGNIZED);
 }
 
 static void handle_ipc_motion_start()
