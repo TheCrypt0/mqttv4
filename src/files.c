@@ -47,21 +47,21 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
 
     chdir(RECORD_PATH);
 
-    sprintf(output, "{\n\"start\":");
+    sprintf(output + strlen(output), "{\n\"start\":");
 
     timeinfo=localtime(&startTime);
     if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
         printf("strftime returned 0");
         return -1;
     }
-    sprintf(output, "%s\"%s\",\n\"end\":", output, s8601date);
+    sprintf(output + strlen(output), "\"%s\",\n\"end\":", s8601date);
 
     timeinfo=localtime(&endTime);
     if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
         printf("strftime returned 0");
         return -1;
     }
-    sprintf(output, "%s\"%s\",\n\"files\":[ ", output, s8601date);
+    sprintf(output + strlen(output), "\"%s\",\n\"files\":[ ", s8601date);
 
     timeinfo=localtime(&endTime);
     sprintf(sDir, "%dY%02dM%02dD%02dH", timeinfo->tm_year + 1900,
@@ -69,7 +69,7 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
     sprintf(sFile, "%02dM", timeinfo->tm_min);
 
     while (findFile(sFilename, sDir, sFile) == 0) {
-        sprintf(output, "%s\"%s/%s\", ", output, sDir, sFilename);
+        sprintf(output + strlen(output), "\"%s/%s\", ", sDir, sFilename);
 
         num++;
         if (num >= limit) break;
@@ -87,7 +87,7 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
 
     output[strlen(output)-2] = ' ';
     output[strlen(output)-1] = '\0';
-    sprintf(output, "%s]\n}\n", output);
+    sprintf(output + strlen(output), "]\n}\n");
 
     return 0;
 }
