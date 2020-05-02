@@ -22,8 +22,10 @@ typedef struct
     char *mqtt_prefix;
     char *topic_motion;
     char *topic_motion_files;
+    char *topic_baby_crying;
     char *motion_start_msg;
     char *motion_stop_msg;
+    char *baby_crying_msg;
 } mqttv4_conf_t;
 
 #endif // MQTTV4_H

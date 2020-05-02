@@ -115,6 +115,22 @@ void callback_motion_stop()
     timeStop = 0;
 }
 
+void callback_baby_crying()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("CALLBACK BABY CRYING\n");
+
+    msg.msg=mqttv4_conf.baby_crying_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_baby_crying);
+
+    mqtt_send_message(&msg);
+}
+
 int main(int argc, char **argv)
 {
     int ret;
@@ -145,6 +161,7 @@ int main(int argc, char **argv)
 
     ipc_set_callback(IPC_MSG_MOTION_START, &callback_motion_start);
     ipc_set_callback(IPC_MSG_MOTION_STOP, &callback_motion_stop);
+    ipc_set_callback(IPC_MSG_BABY_CRYING, &callback_baby_crying);
 
     while(1)
     {
@@ -227,6 +244,11 @@ static void handle_config(const char *key, const char *value)
         mqttv4_conf.topic_motion_files=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.topic_motion_files, value);
     }
+    else if(strcmp(key, "TOPIC_BABY_CRYING")==0)
+    {
+        mqttv4_conf.topic_baby_crying=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.topic_baby_crying, value);
+    }
     else if(strcmp(key, "MOTION_START_MSG")==0)
     {
         mqttv4_conf.motion_start_msg=malloc((char)strlen(value)+1);
@@ -236,6 +258,11 @@ static void handle_config(const char *key, const char *value)
     {
         mqttv4_conf.motion_stop_msg=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.motion_stop_msg, value);
+    }
+    else if(strcmp(key, "BABY_CRYING_MSG")==0)
+    {
+        mqttv4_conf.baby_crying_msg=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.baby_crying_msg, value);
     }
     else
     {

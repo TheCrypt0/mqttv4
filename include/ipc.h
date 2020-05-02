@@ -35,18 +35,17 @@
 #define IPC_QUEUE_NAME          "/ipc_dispatch"
 #define IPC_MESSAGE_MAX_SIZE    512
 
-#define IPC_FIRST_HEADER_0      "\x01\x00\x00\x00"
+#define IPC_MOTION_START        "\x01\x00\x00\x00\x02\x00\x00\x00\x7c\x00\x7c\x00"
+#define IPC_MOTION_STOP         "\x01\x00\x00\x00\x02\x00\x00\x00\x7d\x00\x7d\x00"
 
-#define IPC_SECOND_HEADER_0     "\x02\x00\x00\x00"
-
-#define IPC_MOTION_START        "\x7c\x00\x7c\x00"
-#define IPC_MOTION_STOP         "\x7d\x00\x7d\x00"
+#define IPC_BABY_CRYING         "\x04\x00\x00\x00\x02\x00\x00\x00\x02\x60\x02\x60\x00\x00\x00\x00"
 
 typedef enum
 {
     IPC_MSG_UNRECOGNIZED,
     IPC_MSG_MOTION_START,
     IPC_MSG_MOTION_STOP,
+    IPC_MSG_BABY_CRYING,
     IPC_MSG_LAST
 } IPC_MESSAGE_TYPE;
 

@@ -39,6 +39,7 @@ static void ipc_debug(const char* fmt, ...);
 
 static void handle_ipc_motion_start();
 static void handle_ipc_motion_stop();
+static void handle_ipc_baby_crying();
 
 static void handle_ipc_unrecognized();
 
@@ -159,36 +160,20 @@ static int parse_message(char *msg, ssize_t len)
         ipc_debug("%02x ", msg[i]);
     ipc_debug("\n");
 
-    if(len>=12)
+    if((len == sizeof(IPC_MOTION_START) - 1) && (memcmp(msg, IPC_MOTION_START, sizeof(IPC_MOTION_START) - 1)==0))
     {
-        if(memcmp(msg, IPC_FIRST_HEADER_0, 4)==0)
-        {
-            msg+=4;
-            if(memcmp(msg,IPC_SECOND_HEADER_0, 4)==0)
-            {
-                msg+=4;
-
-                // It seems like the motion events may contain even
-                // more information. Like the motion "strength", treshold
-                // and similar stuff.
-                // Further invesrigation is required but it should be
-                // pretty easy to parse out.
-
-                // HINT: See the /tmp/log.txt file for more info regarding
-                // the current motion. (tail -f /tmp/log.txt)
-
-                if(memcmp(msg, IPC_MOTION_START, 4)==0)
-                {
-                    handle_ipc_motion_start();
-                    return 0;
-                }
-                else if(memcmp(msg, IPC_MOTION_STOP, 4)==0)
-                {
-                    handle_ipc_motion_stop();
-                    return 0;
-                }
-            }
-        }
+        handle_ipc_motion_start();
+        return 0;
+    }
+    else if((len == sizeof(IPC_MOTION_STOP) - 1) && (memcmp(msg, IPC_MOTION_STOP, sizeof(IPC_MOTION_STOP) - 1)==0))
+    {
+        handle_ipc_motion_stop();
+        return 0;
+    }
+    else if((len == sizeof(IPC_BABY_CRYING) - 1) && (memcmp(msg, IPC_BABY_CRYING, sizeof(IPC_BABY_CRYING) - 1)==0))
+    {
+        handle_ipc_baby_crying();
+        return 0;
     }
 
     handle_ipc_unrecognized();
@@ -216,6 +201,12 @@ static void handle_ipc_motion_stop()
 {
     ipc_debug("GOT MOTION STOP\n");
     call_callback(IPC_MSG_MOTION_STOP);
+}
+
+static void handle_ipc_baby_crying()
+{
+    ipc_debug("GOT BABY CRYING\n");
+    call_callback(IPC_MSG_BABY_CRYING);
 }
 
 //-----------------------------------------------------------------------------
