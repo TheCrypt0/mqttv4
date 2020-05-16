@@ -78,7 +78,7 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
         rawtime-=60;
         timeinfo = localtime(&rawtime);
 
-        if (rawtime < startTime) break;
+        if (rawtime < (startTime - 60)) break;
 
         sprintf(sDir, "%dY%02dM%02dD%02dH", timeinfo->tm_year + 1900,
             timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour);

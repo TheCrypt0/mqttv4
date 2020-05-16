@@ -17,7 +17,7 @@ typedef struct {
     time_t timeStart;
     time_t timeStop;
     char output[2048];   // Enough for 50 files
-    int active;
+    int running;
 } files_thread;
 
 int getMp4Files(char *output, int limit, time_t startTime, time_t endTime);

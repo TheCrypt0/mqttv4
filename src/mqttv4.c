@@ -21,20 +21,25 @@ static void handle_config(const char *key, const char *value);
 
 files_thread filesThread[2];
 
-time_t timeStart, timeStop;
 int files_delay = 70;        // Wait for xx seconds before search for mp4 files
 int files_max_events = 50;   // Number of files reported in the message
 
-int get_thread_index()
+int get_thread_index(int isRunning)
 {
-    int i;
+    int i = -1;
+    int ret;
+    time_t tmpTimeStart;
 
+    time(&tmpTimeStart);
     for (i = 0; i < 2; i++) {
-        if (filesThread[i].active == 0)
-            return i;
+        if ((isRunning == 1) && (filesThread[i].running == 0)) continue;
+        if (filesThread[i].timeStart < tmpTimeStart) {
+            tmpTimeStart = filesThread[i].timeStart;
+            ret = i;
+        }
     }
 
-    return -1;
+    return ret;
 }
 
 void *send_files_list(void *arg)
@@ -57,7 +62,9 @@ void *send_files_list(void *arg)
 
         mqtt_send_message(&msg);
     }
-    ft->active = 0;
+    ft->timeStart = 0;
+    ft->timeStop = 0;
+    ft->running = 0;
 
     pthread_exit(NULL);
 }
@@ -66,11 +73,15 @@ void callback_motion_start()
 {
     char topic[128];
     mqtt_msg_t msg;
+    int ti;
 
     printf("CALLBACK MOTION START\n");
 
-    if (timeStart == 0)
-        time(&timeStart);
+    ti = get_thread_index(0);
+    if (ti >= 0 ) {
+        time(&filesThread[ti].timeStart);
+        filesThread[ti].running = 1;
+    }
 
     msg.msg=mqttv4_conf.motion_start_msg;
     msg.len=strlen(msg.msg);
@@ -86,10 +97,11 @@ void callback_motion_stop()
     char topic[128];
     mqtt_msg_t msg;
     int ti;
+    time_t tmpTimeStop;
 
     printf("CALLBACK MOTION STOP\n");
 
-    time(&timeStop);
+    time(&tmpTimeStop);
 
     msg.msg=mqttv4_conf.motion_stop_msg;
     msg.len=strlen(msg.msg);
@@ -99,20 +111,15 @@ void callback_motion_stop()
 
     mqtt_send_message(&msg);
 
-    ti = get_thread_index();
-    if (ti >=0 ) {
-        filesThread[ti].timeStart = timeStart;
-        filesThread[ti].timeStop = timeStop;
-        filesThread[ti].active = 1;
+    ti = get_thread_index(1);
+    if (ti >= 0 ) {
+        filesThread[ti].timeStop = tmpTimeStop;
 
         if (pthread_create(&filesThread[ti].thread, NULL, send_files_list, (void *) &filesThread[ti])) {
             printf("An error occured creating thread\n");
         }
         pthread_detach(filesThread[ti].thread);
     }
-
-    timeStart = 0;
-    timeStop = 0;
 }
 
 void callback_baby_crying()
@@ -140,8 +147,13 @@ int main(int argc, char **argv)
 
     printf("Starting mqttv4 v%s\n", MQTTV4_VERSION);
 
-    filesThread[0].active = 0;
-    filesThread[1].active = 0;
+    // Init threads struct
+    filesThread[0].running = 0;
+    filesThread[1].running = 0;
+    filesThread[0].timeStart = 0;
+    filesThread[1].timeStart = 0;
+    filesThread[0].timeStop = 0;
+    filesThread[1].timeStop = 0;
 
     mqtt_init_conf(&conf);
     init_mqttv4_config();
