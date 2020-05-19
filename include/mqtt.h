@@ -19,7 +19,9 @@ typedef struct
     int         keepalive;
     char        bind_address[32];
     int         qos;
-    int         retain;
+    int         retain_motion;
+    int         retain_motion_files;
+    int         retain_baby_crying;
 } mqtt_conf_t;
 
 typedef struct
@@ -37,7 +39,7 @@ void mqtt_loop(void);
 void mqtt_init_conf(mqtt_conf_t *conf);
 void mqtt_set_conf(mqtt_conf_t *conf);
 void mqtt_check_connection();
-int mqtt_send_message(mqtt_msg_t *msg);
+int mqtt_send_message(mqtt_msg_t *msg, int retain);
 
 int mqtt_connect();
 

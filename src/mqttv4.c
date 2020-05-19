@@ -60,7 +60,7 @@ void *send_files_list(void *arg)
 
         sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion_files);
 
-        mqtt_send_message(&msg);
+        mqtt_send_message(&msg, conf.retain_motion_files);
     }
     ft->timeStart = 0;
     ft->timeStop = 0;
@@ -89,7 +89,7 @@ void callback_motion_start()
 
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion);
 
-    mqtt_send_message(&msg);
+    mqtt_send_message(&msg, conf.retain_motion);
 }
 
 void callback_motion_stop()
@@ -109,7 +109,7 @@ void callback_motion_stop()
 
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_motion);
 
-    mqtt_send_message(&msg);
+    mqtt_send_message(&msg, conf.retain_motion);
 
     ti = get_thread_index(1);
     if (ti >= 0 ) {
@@ -135,7 +135,7 @@ void callback_baby_crying()
 
     sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_baby_crying);
 
-    mqtt_send_message(&msg);
+    mqtt_send_message(&msg, conf.retain_baby_crying);
 }
 
 int main(int argc, char **argv)
@@ -234,12 +234,26 @@ static void handle_config(const char *key, const char *value)
         if(errno==0)
             conf.qos=nvalue;
     }
-    else if(strcmp(key, "MQTT_RETAIN")==0)
+    else if(strcmp(key, "MQTT_RETAIN_MOTION")==0)
     {
         errno=0;
         nvalue=strtol(value, NULL, 10);
         if(errno==0)
-            conf.retain=nvalue;
+            conf.retain_motion=nvalue;
+    }
+    else if(strcmp(key, "MQTT_RETAIN_MOTION_FILES")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.retain_motion_files=nvalue;
+    }
+    else if(strcmp(key, "MQTT_RETAIN_BABY_CRYING")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.retain_baby_crying=nvalue;
     }
     else if(strcmp(key, "MQTT_PREFIX")==0)
     {

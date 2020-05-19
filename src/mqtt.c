@@ -62,7 +62,9 @@ void mqtt_init_conf(mqtt_conf_t *conf)
     conf->keepalive=120;
     conf->port=1883;
     conf->qos=1;
-    conf->retain=1;
+    conf->retain_motion=1;
+    conf->retain_motion_files=1;
+    conf->retain_baby_crying=1;
 }
 
 void mqtt_set_conf(mqtt_conf_t *conf)
@@ -133,7 +135,7 @@ int mqtt_connect()
     return 0;
 }
 
-int mqtt_send_message(mqtt_msg_t *msg)
+int mqtt_send_message(mqtt_msg_t *msg, int retain)
 {
     int ret;
 
@@ -141,7 +143,7 @@ int mqtt_send_message(mqtt_msg_t *msg)
         return -1;
 
     ret=mosquitto_publish(mosq, &mid_sent, msg->topic, msg->len, msg->msg,
-                          mqtt_conf->qos, mqtt_conf->retain);
+                          mqtt_conf->qos, retain);
 
     if(ret!=MOSQ_ERR_SUCCESS)
     {
