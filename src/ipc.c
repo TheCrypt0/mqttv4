@@ -26,6 +26,7 @@ static pthread_t *tr_queue;
 int tr_queue_routine;
 
 static int open_queue();
+static int clear_queue();
 static int start_queue_thread();
 static void *queue_thread(void *args);
 static int parse_message(char *msg, ssize_t len);
@@ -61,9 +62,13 @@ int ipc_init()
 {
     int ret;
 
-    ret=open_queue();
-    if(ret!=0)
+    ret = open_queue();
+    if(ret != 0)
         return -1;
+
+    ret = clear_queue();
+    if(ret != 0)
+        return -2;
 
     ipc_callbacks=malloc((sizeof(func_ptr_t))*IPC_MSG_LAST);
 
@@ -106,6 +111,29 @@ static int open_queue()
     return 0;
 }
 
+static int clear_queue()
+{
+    struct mq_attr attr;
+    char buffer[IPC_MESSAGE_MAX_SIZE + 1];
+
+    if (mq_getattr(ipc_mq, &attr) == -1) {
+        fprintf(stderr, "Can't get queue attributes\n");
+        return -1;
+    }
+
+    while (attr.mq_curmsgs > 0) {
+        ipc_debug("Clear message in queue...");
+        mq_receive(ipc_mq, buffer, IPC_MESSAGE_MAX_SIZE, NULL);
+        ipc_debug(" done.\n");
+        if (mq_getattr(ipc_mq, &attr) == -1) {
+            fprintf(stderr, "Can't get queue attributes\n");
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 static int start_queue_thread()
 {
     int ret;
@@ -137,10 +165,7 @@ static void *queue_thread(void *args)
         if(bytes_read>=0)
         {
             parse_message(buffer, bytes_read);
-            // make sure to re-send the message
-            mq_send(ipc_mq, buffer, bytes_read, 0);
         }
-        // Wait 10ms to not get back the message we sent
         usleep(10*1000);
     }
 

@@ -116,7 +116,7 @@ void callback_motion_stop()
         filesThread[ti].timeStop = tmpTimeStop;
 
         if (pthread_create(&filesThread[ti].thread, NULL, send_files_list, (void *) &filesThread[ti])) {
-            printf("An error occured creating thread\n");
+            fprintf(stderr, "An error occured creating thread\n");
         }
         pthread_detach(filesThread[ti].thread);
     }

@@ -7,7 +7,7 @@ int findFile(char *dirname, char *dir, char *filestart)
     struct stat statbuf;
 
     if((dp = opendir(dir)) == NULL) {
-        printf("Cannot open directory: %s\n", dir);
+        fprintf(stderr, "Cannot open directory: %s\n", dir);
         return -2;
     }
 
@@ -51,14 +51,14 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
 
     timeinfo=localtime(&startTime);
     if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
-        printf("strftime returned 0");
+        fprintf(stderr, "strftime returned 0");
         return -1;
     }
     sprintf(output + strlen(output), "\"%s\",\n\"end\":", s8601date);
 
     timeinfo=localtime(&endTime);
     if (strftime(s8601date, sizeof(s8601date), "%FT%T%z", timeinfo) == 0) {
-        printf("strftime returned 0");
+        fprintf(stderr, "strftime returned 0");
         return -1;
     }
     sprintf(output + strlen(output), "\"%s\",\n\"files\":[ ", s8601date);
