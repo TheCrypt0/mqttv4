@@ -62,6 +62,7 @@ void mqtt_init_conf(mqtt_conf_t *conf)
     conf->keepalive=120;
     conf->port=1883;
     conf->qos=1;
+    conf->retain_ai_human_detection=1;
     conf->retain_motion=1;
     conf->retain_motion_files=1;
     conf->retain_baby_crying=1;
