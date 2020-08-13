@@ -38,6 +38,8 @@ static void ipc_debug(const char* fmt, ...);
 // MESSAGES HANDLERS
 //-----------------------------------------------------------------------------
 
+static void handle_ipc_ai_human_detection_start();
+static void handle_ipc_ai_human_detection_stop();
 static void handle_ipc_motion_start();
 static void handle_ipc_motion_stop();
 static void handle_ipc_baby_crying();
@@ -185,7 +187,17 @@ static int parse_message(char *msg, ssize_t len)
         ipc_debug("%02x ", msg[i]);
     ipc_debug("\n");
 
-    if((len >= sizeof(IPC_MOTION_START) - 1) && (memcmp(msg, IPC_MOTION_START, sizeof(IPC_MOTION_START) - 1)==0))
+    if((len >= sizeof(IPC_AI_HUMAN_DETECTION_START) - 1) && (memcmp(msg, IPC_AI_HUMAN_DETECTION_START, sizeof(IPC_AI_HUMAN_DETECTION_START) - 1)==0))
+    {
+        handle_ipc_ai_human_detection_start();
+        return 0;
+    }
+    else if((len >= sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1) && (memcmp(msg, IPC_AI_HUMAN_DETECTION_STOP, sizeof(IPC_AI_HUMAN_DETECTION_STOP) - 1)==0))
+    {
+        handle_ipc_ai_human_detection_stop();
+        return 0;
+    }
+    else if((len >= sizeof(IPC_MOTION_START) - 1) && (memcmp(msg, IPC_MOTION_START, sizeof(IPC_MOTION_START) - 1)==0))
     {
         handle_ipc_motion_start();
         return 0;
@@ -214,6 +226,18 @@ static void handle_ipc_unrecognized()
 {
     ipc_debug("GOT UNRECOGNIZED MESSAGE\n");
 //    call_callback(IPC_MSG_UNRECOGNIZED);
+}
+
+static void handle_ipc_ai_human_detection_start()
+{
+    ipc_debug("GOT AI_HUMAN_DETECTION START\n");
+    call_callback(IPC_MSG_AI_HUMAN_DETECTION_START);
+}
+
+static void handle_ipc_ai_human_detection_stop()
+{
+    ipc_debug("GOT AI_HUMAN_DETECTION STOP\n");
+    call_callback(IPC_MSG_AI_HUMAN_DETECTION_STOP);
 }
 
 static void handle_ipc_motion_start()

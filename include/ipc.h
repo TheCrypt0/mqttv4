@@ -35,13 +35,17 @@
 #define IPC_QUEUE_NAME          "/ipc_dispatch_1"
 #define IPC_MESSAGE_MAX_SIZE    512
 
-#define IPC_MOTION_START        "\x4d\x4f\x54\x49\x4f\x4e\x5f\x53\x54\x41\x52\x54"
-#define IPC_MOTION_STOP         "\x4d\x4f\x54\x49\x4f\x4e\x5f\x53\x54\x4f\x50"
-#define IPC_BABY_CRYING         "\x42\x41\x42\x59\x5f\x43\x52\x59\x49\x4e\x47"
+#define IPC_AI_HUMAN_DETECTION_START    "\x01\x00\x00\x00\x02\x00\x00\x00\xf5\x00\xf5\x00\x00\x00\x00\x00"
+#define IPC_AI_HUMAN_DETECTION_STOP     "\x01\x00\x00\x00\x02\x00\x00\x00\xed\x00\xed\x00\x00\x00\x00\x00"
+#define IPC_MOTION_START                "\x4d\x4f\x54\x49\x4f\x4e\x5f\x53\x54\x41\x52\x54"
+#define IPC_MOTION_STOP                 "\x4d\x4f\x54\x49\x4f\x4e\x5f\x53\x54\x4f\x50"
+#define IPC_BABY_CRYING                 "\x42\x41\x42\x59\x5f\x43\x52\x59\x49\x4e\x47"
 
 typedef enum
 {
     IPC_MSG_UNRECOGNIZED,
+    IPC_MSG_AI_HUMAN_DETECTION_START,
+    IPC_MSG_AI_HUMAN_DETECTION_STOP,
     IPC_MSG_MOTION_START,
     IPC_MSG_MOTION_STOP,
     IPC_MSG_BABY_CRYING,

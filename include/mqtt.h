@@ -19,6 +19,7 @@ typedef struct
     int         keepalive;
     char        bind_address[32];
     int         qos;
+    int         retain_ai_human_detection;
     int         retain_motion;
     int         retain_motion_files;
     int         retain_baby_crying;
