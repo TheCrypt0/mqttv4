@@ -44,6 +44,7 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
     char sFilename[1024];
     char s8601date[64];
     int num = 0;
+    int fileFound = 0;
 
     chdir(RECORD_PATH);
 
@@ -69,6 +70,7 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
     sprintf(sFile, "%02dM", timeinfo->tm_min);
 
     while (findFile(sFilename, sDir, sFile) == 0) {
+        fileFound = 1;
         sprintf(output + strlen(output), "\"%s/%s\", ", sDir, sFilename);
 
         num++;
@@ -85,8 +87,10 @@ int getMp4Files(char *output, int limit, time_t startTime, time_t endTime)
         sprintf(sFile, "%02dM", timeinfo->tm_min);
     }
 
-    output[strlen(output)-2] = ' ';
-    output[strlen(output)-1] = '\0';
+    if (fileFound) {
+        output[strlen(output)-2] = ' ';
+        output[strlen(output)-1] = '\0';
+    }
     sprintf(output + strlen(output), "]\n}\n");
 
     return 0;
