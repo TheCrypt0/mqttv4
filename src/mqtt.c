@@ -13,6 +13,38 @@ static void disconnect_callback(struct mosquitto *mosq, void *obj, int rc);
 static void publish_callback(struct mosquitto *mosq, void *obj, int mid);
 static void log_callback(struct mosquitto *mosq, void *obj, int level, const char *str);
 
+void send_birth_msg()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("SEND BIRTH MESSAGE\n");
+
+    msg.msg=mqtt_conf->birth_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_birth);
+
+    mqtt_send_message(&msg, mqtt_conf->retain_birth);
+}
+
+void send_will_msg()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("SEND WILL MESSAGE\n");
+
+    msg.msg=mqtt_conf->will_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqtt_conf->mqtt_prefix, mqtt_conf->topic_will);
+
+    mqtt_send_message(&msg, mqtt_conf->retain_will);
+}
+
 int init_mqtt(void)
 {
     int ret;
@@ -38,6 +70,8 @@ int init_mqtt(void)
 
 void stop_mqtt(void)
 {
+    send_will_msg();
+    mosquitto_destroy(mosq);
     mosquitto_lib_cleanup();
 }
 
@@ -203,6 +237,7 @@ static void connect_callback(struct mosquitto *mosq, void *obj, int result)
     if(result==MOSQ_ERR_SUCCESS)
     {
         is_connected=true;
+        send_birth_msg();
     }
     else
     {
