@@ -69,6 +69,38 @@ void *send_files_list(void *arg)
     pthread_exit(NULL);
 }
 
+void callback_ai_human_detection_start()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("CALLBACK AI_HUMAN_DETECTION START\n");
+
+    msg.msg=mqttv4_conf.ai_human_detection_start_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_ai_human_detection);
+
+    mqtt_send_message(&msg, conf.retain_ai_human_detection);
+}
+
+void callback_ai_human_detection_stop()
+{
+    char topic[128];
+    mqtt_msg_t msg;
+
+    printf("CALLBACK AI_HUMAN_DETECTION STOP\n");
+
+    msg.msg=mqttv4_conf.ai_human_detection_stop_msg;
+    msg.len=strlen(msg.msg);
+    msg.topic=topic;
+
+    sprintf(topic, "%s/%s", mqttv4_conf.mqtt_prefix, mqttv4_conf.topic_ai_human_detection);
+
+    mqtt_send_message(&msg, conf.retain_ai_human_detection);
+}
+
 void callback_motion_start()
 {
     char topic[128];
@@ -171,6 +203,8 @@ int main(int argc, char **argv)
     if(ret!=0)
         exit(EXIT_FAILURE);
 
+    ipc_set_callback(IPC_MSG_AI_HUMAN_DETECTION_START, &callback_ai_human_detection_start);
+    ipc_set_callback(IPC_MSG_AI_HUMAN_DETECTION_STOP, &callback_ai_human_detection_stop);
     ipc_set_callback(IPC_MSG_MOTION_START, &callback_motion_start);
     ipc_set_callback(IPC_MSG_MOTION_STOP, &callback_motion_stop);
     ipc_set_callback(IPC_MSG_BABY_CRYING, &callback_baby_crying);
@@ -252,6 +286,13 @@ static void handle_config(const char *key, const char *value)
         if(errno==0)
             conf.retain_will=nvalue;
     }
+    else if(strcmp(key, "MQTT_RETAIN_AI_HUMAN_DETECTION")==0)
+    {
+        errno=0;
+        nvalue=strtol(value, NULL, 10);
+        if(errno==0)
+            conf.retain_ai_human_detection=nvalue;
+    }
     else if(strcmp(key, "MQTT_RETAIN_MOTION")==0)
     {
         errno=0;
@@ -294,6 +335,11 @@ static void handle_config(const char *key, const char *value)
         mqttv4_conf.topic_will=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.topic_will, value);
     }
+    else if(strcmp(key, "TOPIC_AI_HUMAN_DETECTION")==0)
+    {
+        mqttv4_conf.topic_ai_human_detection=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.topic_ai_human_detection, value);
+    }
     else if(strcmp(key, "TOPIC_MOTION")==0)
     {
         mqttv4_conf.topic_motion=malloc((char)strlen(value)+1);
@@ -322,6 +368,16 @@ static void handle_config(const char *key, const char *value)
         strcpy(conf.will_msg, value);
         mqttv4_conf.will_msg=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.will_msg, value);
+    }
+    else if(strcmp(key, "AI_HUMAN_DETECTION_START_MSG")==0)
+    {
+        mqttv4_conf.ai_human_detection_start_msg=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.ai_human_detection_start_msg, value);
+    }
+    else if(strcmp(key, "AI_HUMAN_DETECTION_STOP_MSG")==0)
+    {
+        mqttv4_conf.ai_human_detection_stop_msg=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.ai_human_detection_stop_msg, value);
     }
     else if(strcmp(key, "MOTION_START_MSG")==0)
     {
