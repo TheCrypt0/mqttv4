@@ -20,8 +20,7 @@
 typedef struct
 {
     char *mqtt_prefix;
-    char *topic_birth;
-    char *topic_will;
+    char *topic_birth_will;
     char *topic_motion;
     char *topic_motion_files;
     char *topic_baby_crying;

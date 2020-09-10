@@ -272,19 +272,12 @@ static void handle_config(const char *key, const char *value)
         if(errno==0)
             conf.qos=nvalue;
     }
-    else if(strcmp(key, "MQTT_RETAIN_BIRTH")==0)
+    else if(strcmp(key, "MQTT_RETAIN_BIRTH_WILL")==0)
     {
         errno=0;
         nvalue=strtol(value, NULL, 10);
         if(errno==0)
-            conf.retain_birth=nvalue;
-    }
-    else if(strcmp(key, "MQTT_RETAIN_WILL")==0)
-    {
-        errno=0;
-        nvalue=strtol(value, NULL, 10);
-        if(errno==0)
-            conf.retain_will=nvalue;
+            conf.retain_birth_will=nvalue;
     }
     else if(strcmp(key, "MQTT_RETAIN_AI_HUMAN_DETECTION")==0)
     {
@@ -321,19 +314,12 @@ static void handle_config(const char *key, const char *value)
         mqttv4_conf.mqtt_prefix=malloc((char)strlen(value)+1);
         strcpy(mqttv4_conf.mqtt_prefix, value);
     }
-    else if(strcmp(key, "TOPIC_BIRTH")==0)
+    else if(strcmp(key, "TOPIC_BIRTH_WILL")==0)
     {
-        conf.topic_birth=malloc((char)strlen(value)+1);
-        strcpy(conf.topic_birth, value);
-        mqttv4_conf.topic_birth=malloc((char)strlen(value)+1);
-        strcpy(mqttv4_conf.topic_birth, value);
-    }
-    else if(strcmp(key, "TOPIC_WILL")==0)
-    {
-        conf.topic_will=malloc((char)strlen(value)+1);
-        strcpy(conf.topic_will, value);
-        mqttv4_conf.topic_will=malloc((char)strlen(value)+1);
-        strcpy(mqttv4_conf.topic_will, value);
+        conf.topic_birth_will=malloc((char)strlen(value)+1);
+        strcpy(conf.topic_birth_will, value);
+        mqttv4_conf.topic_birth_will=malloc((char)strlen(value)+1);
+        strcpy(mqttv4_conf.topic_birth_will, value);
     }
     else if(strcmp(key, "TOPIC_AI_HUMAN_DETECTION")==0)
     {
