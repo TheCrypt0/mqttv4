@@ -81,6 +81,7 @@ int main(int argc, char **argv)
 
     while(1)
     {
+        mqtt_check_connection();
         mqtt_loop();
         usleep(500*1000);
     }

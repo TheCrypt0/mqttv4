@@ -36,6 +36,7 @@ void mqtt_loop(void);
 
 void mqtt_init_conf(mqtt_conf_t *conf);
 void mqtt_set_conf(mqtt_conf_t *conf);
+void mqtt_check_connection();
 int mqtt_send_message(mqtt_msg_t *msg);
 
 int mqtt_connect();

@@ -70,6 +70,12 @@ void mqtt_set_conf(mqtt_conf_t *conf)
     mqtt_conf=conf;
 }
 
+void mqtt_check_connection()
+{
+    if (!is_connected)
+        mqtt_connect();
+}
+
 int mqtt_connect()
 {
     int ret;
